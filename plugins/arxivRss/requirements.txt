@@ -1,0 +1,4 @@
+iamai==0.0.2
+iamai-adapter-apscheduler==0.0.3
+iamai-adapter-cqhttp==0.0.3
+feedparser==6.0.11
