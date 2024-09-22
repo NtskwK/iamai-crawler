@@ -15,6 +15,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 # from .config import Config
 
+# 意义不明的配置
+master_qq = 3404313848
+target_group = "1077422338"
+paper_classification = ["cs.CV"]
+key_words = ["Sentinel-2", "Gaofen-2", "Gaofen-1", "ICESat-2", "tidal", "tidal flat", "time-series"]
+
 subscribe = Path(__file__).parent / "subscribe.json"
 subscribe_list = json.loads(subscribe.read_text("utf-8")) if subscribe.is_file() else {}
 scheduler = BackgroundScheduler()
@@ -110,7 +116,7 @@ async def get_arxiv_subscribe(user_id, label, keywords):
         takeaway_list = []
         msg_list = [
             CQHTTPMessageSegment.node_custom(
-                user_id=2558978017,
+                user_id=master_qq,
                 nickname="ArxivRSS",
                 content=CQHTTPMessage(
                     CQHTTPMessageSegment.text(
@@ -130,7 +136,7 @@ async def get_arxiv_subscribe(user_id, label, keywords):
             msg += f"\n{summary}"
             msg_list.append(
                 CQHTTPMessageSegment.node_custom(
-                    user_id=2558978017,
+                    user_id=master_qq,
                     nickname="ArxivRSS",
                     content=CQHTTPMessage(CQHTTPMessageSegment.text(msg)),
                 )
@@ -141,7 +147,7 @@ async def get_arxiv_subscribe(user_id, label, keywords):
             msg = get_link(entries[i].link)
             msg_list.append(
                 CQHTTPMessageSegment.node_custom(
-                    user_id=2558978017,
+                    user_id=master_qq,
                     nickname="ArxivRSS",
                     content=CQHTTPMessage(CQHTTPMessageSegment.text(msg)),
                 )
@@ -150,7 +156,7 @@ async def get_arxiv_subscribe(user_id, label, keywords):
                 msg_lists.append(msg_list)
                 msg_list = [
                     CQHTTPMessageSegment.node_custom(
-                        user_id=2558978017,
+                        user_id=master_qq,
                         nickname="ArxivRSS",
                         content=CQHTTPMessage(
                             CQHTTPMessageSegment.text(
@@ -182,7 +188,7 @@ async def get_arxiv_subscribe_group(group_id, label, keywords):
         takeaway_list = []
         msg_list = [
             CQHTTPMessageSegment.node_custom(
-                user_id=2558978017,
+                user_id=master_qq,
                 nickname="ArxivRSS",
                 content=CQHTTPMessage(
                     CQHTTPMessageSegment.text(
@@ -204,7 +210,7 @@ async def get_arxiv_subscribe_group(group_id, label, keywords):
             msg += f"\n{link}"
             msg_list.append(
                 CQHTTPMessageSegment.node_custom(
-                    user_id=2558978017,
+                    user_id=master_qq,
                     nickname="ArxivRSS",
                     content=CQHTTPMessage(CQHTTPMessageSegment.text(msg)),
                 )
@@ -224,7 +230,7 @@ async def get_arxiv_subscribe_group(group_id, label, keywords):
                 msg_lists.append(msg_list)
                 msg_list = [
                     CQHTTPMessageSegment.node_custom(
-                        user_id=2558978017,
+                        user_id=master_qq,
                         nickname="ArxivRSS",
                         content=CQHTTPMessage(
                             CQHTTPMessageSegment.text(
@@ -273,7 +279,7 @@ async def push_all_arxiv_subscribe_group(bot, group_id, labels, keywords):
 
 @scheduler_decorator(
     trigger="cron",
-    trigger_args={"hour": 18, "minute": 00},
+    trigger_args={"hour": 13, "minute": 00},
     # trigger_args={"seconds": 60},
     override_rule=True,
 )
@@ -288,9 +294,9 @@ class ArxivRss(Plugin):
             # )
             await push_all_arxiv_subscribe_group(
                 bot,
-                "126211793",
-                ["cs.AI"],
-                ["LLMs", "GPT", "Transformer", "KANs", "LLAMA"],
+                target_group,
+                paper_classification,
+                key_words,
             )
         elif self.event.type == "message":
             args = str(self.event.message).strip("/arxiv").split() or str(
@@ -545,13 +551,13 @@ class ArxivRss(Plugin):
         Private Conversation Only
 
         Usage:
-        【arxiv add category】
+        【arxiv add [category]】
         Add a new category to your subscription. 
         Category should be Arxiv Category like cs (for computer science) or cs.CL (for computation and language). 
         Use "arxiv list" to get all supported categories.
         You should use "arxiv set hh mm" to setup a subscription before you add any category
 
-        【arxiv del category】
+        【arxiv del [category]】
         Remove a category of your subscription.
 
         【arxiv set hh mm】
@@ -589,6 +595,6 @@ class ArxivRss(Plugin):
     async def rule(self) -> bool:
         return bool(
             self.event.type == "message"
-            and self.event.user_id == 2558978017
+            and self.event.user_id == master_qq
             and (self.event.message.get_plain_text().lower().startswith("/arxiv"))
         )

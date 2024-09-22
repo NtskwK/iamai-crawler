@@ -1,8 +1,8 @@
 FROM ubuntu:22.04
 
-RUN apt-get -o Acquire::Retries=3 update && \
-    apt-get -o Acquire::Retries=3 install -y --no-install-recommends git python3 python3-pip curl && \
-    pip install iamai[onebot] && \
+RUN apt-get -qq -o Acquire::Retries=3 update && \
+    apt-get -qq -o Acquire::Retries=3 install -y --no-install-recommends git python3 python3-pip curl && \
+    pip install iamai[all] && \
     pip install iamai-adapter-apscheduler && \
     iamai new iamai && cd iamai
 
